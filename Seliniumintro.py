@@ -4,9 +4,11 @@ Created on Mon Feb  1 11:11:23 2021
 
 @author: abhis
 """
+#This code is for extracting data from dynamic website(for eg: Yahoo Finance). For eg: we need to extract a data "trailingPE" in webpage and find the path for that element in html
+#In this tutorial, our data "trailingPE" is located in dictionary which is there in script tag of html text
 
 
-def findXpath(element,target,path):#this recursive function will find out path for target element
+def findXpath(element,target,path):#this recursive function will find out path of tag for target element i.e."trailingPE"
     
     if target in element.get_attribute("textContent") and element.tag_name=="script":
         return path
@@ -18,7 +20,7 @@ def findXpath(element,target,path):#this recursive function will find out path f
             return final
     return ""
 
-def findJsonpath(jsonobject,target,path,matchtype):
+def findJsonpath(jsonobject,target,path,matchtype):#this function will find out path for target element  i.e."trailingPE" inside path of tag 
     if type(jsonobject)==matchtype:
         if target in jsonobject:
             return path
@@ -30,11 +32,11 @@ def findJsonpath(jsonobject,target,path,matchtype):
     return ""
 #selenium tutorial
 from selenium import webdriver
-import pandas as pd
+import pandas as pd #using panda for converting final data to more readable format
 import json
 url="https://finance.yahoo.com/quote/AAPL/key-statistics?p=AAPL"
 options=webdriver.ChromeOptions()
-options.add_argument('headless')
+options.add_argument('headless')#using headless version so that web browser dont pop up everytime
 
 driver=webdriver.Chrome(executable_path="C:/Users/abhis/Webscraping/chromedriver_win32/chromedriver.exe",options=options)
 driver.get(url)
@@ -59,7 +61,7 @@ for elementcounter in elementcounters:
 #newupdatedelement=driver.find_element_by_xpath(FinalPath+"["+str(counter)+"]")
 newupdatedelement=driver.find_element_by_xpath(FinalPath+"["+str(counter)+"]")
 tempdata=newupdatedelement.get_attribute("textContent").strip("(this));\n")
-tempdata=tempdata.split("root.App.main = ")[1][:-3]
+tempdata=tempdata.split("root.App.main = ")[1][:-3]#desired dictionary in which trailingPE is located is starts after "root.App.main =" , so splited the string on this
 jsondata=json.loads(tempdata)
 matchtype=type(jsondata)
 print("Final Path for data is",findJsonpath(jsondata,"trailingPE","",matchtype))
